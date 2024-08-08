@@ -1,31 +1,29 @@
 'use client'
 
-import { Stack } from "@mui/material";
-import Image from "next/image";
-import { mainModule } from "process";
-import { useActionState, useState } from "react";
+import { Box, Stack } from "@mui/material";
+import { useState } from "react";
 
 
 export default function Home() {
 
-  const [messages, setMessages] = useState({
-
-
+  const [messages, setMessages] = useState([{
     role: 'Assistant',
-    content: `hi, I am the Customer Support Chat Bot. How can I assist you today?`,
-  })
+    content: `Hi, I am the Customer Support Chat Bot. How can I assist you today?`,
+  }]);
 
-  const [messages, setMessages] = useState('')
+  const [newMessage, setNewMessage] = useState('');
 
-  return (<Box width = "100vw"
-     height = "50vh"
-      display= "flex"
-       flexDirection="column"
+  return (
+    <Box 
+      width="100vw"
+      height="70vh"
+      display="flex"
+      flexDirection="column"
       justifyContent="center"
       alignItems="center"
-       >
-  // stack for messages
-        <Stack
+    >
+      {/* Stack for messages */}
+      <Stack
         direction="column"
         width="600px"
         height="700px"
@@ -33,51 +31,38 @@ export default function Home() {
         p={2}
         spacing={2}
       >
-
-
-      
-        < Stack
+        <Stack
           direction="column"
           width="600px"
           height="700px"
           overflow="auto"
           border="1px solid black"
           maxHeight="100%"
-     
-
-      >
-
-        {
-          messages.map((message, index))=> {
+        >
+          {messages.map((message, index) => (
             <Box 
-            key = {index}
-             display= "flex" 
-             justifyContent={
-              messages.role ==== 'assistant'? 'flex-start' : 'flex-end'
-            }
+              key={index}
+              display="flex"
+              justifyContent={
+                message.role === 'Assistant' ? 'flex-start' : 'flex-end'
+              }
             >
-
-          
-
-          }
-        }>
-        <Box
-        bgcolor={
-          message.role=== 'assistant'
-          ? 'primary.main'
-          :'secondary.main'
-        }
-
-        color="white"
-        borderRadius ={16}
-        p={3}
-
-        > 
-        {message.content}
-        </Box>
-        
+              <Box
+                bgcolor={
+                  message.role === 'Assistant'
+                    ? 'primary.main'
+                    : 'secondary.main'
+                }
+                color="white" // color of the text
+                borderRadius={2}
+                p={5}
+              >
+                {message.content}
+              </Box>
+            </Box>
+          ))}
+        </Stack>
       </Stack>
-      </Stack>
-       </Box>
-      )
+    </Box>
+  );
 }
