@@ -1,13 +1,59 @@
-
+/* General layout */
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Changed from space-between to flex-start */
+  justify-content: flex-start;
   align-items: center;
   padding: 6rem;
   min-height: 100vh;
+  background-color: black; /* Background outside the boxes */
 }
 
+/* Chat container styles */
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  background-color: silver; /* Background inside the chat box */
+  color: black;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* User message box styles */
+.userMessage {
+  background-color: #301934;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Assistant message box styles */
+.assistantMessage {
+  background-color: #003a5f; /* Adjust to your primary color */
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Text field and send button styles */
+.textField {
+  background-color: silver;
+  color: black;
+  border-radius: 8px;
+}
+
+.sendButton {
+  background-color: silver;
+  color: black;
+  border-radius: 8px;
+}
+
+/* Other existing styles */
 .description {
   display: inherit;
   justify-content: inherit;
@@ -109,7 +155,8 @@
 .logo {
   position: relative;
 }
-/* Enable hover only on non-touch devices */
+
+/* Hover effects */
 @media (hover: hover) and (pointer: fine) {
   .card:hover {
     background: rgba(var(--card-rgb), 0.1);
@@ -127,7 +174,7 @@
   }
 }
 
-/* Mobile */
+/* Mobile styles */
 @media (max-width: 700px) {
   .content {
     padding: 4rem;
@@ -204,13 +251,14 @@
   }
 }
 
-/* Tablet and Smaller Desktop */
+/* Tablet and Smaller Desktop styles */
 @media (min-width: 701px) and (max-width: 1120px) {
   .grid {
     grid-template-columns: repeat(2, 50%);
   }
 }
 
+/* Dark mode styles */
 @media (prefers-color-scheme: dark) {
   .vercelLogo {
     filter: invert(1);
@@ -221,6 +269,7 @@
   }
 }
 
+/* Animation */
 @keyframes rotate {
   from {
     transform: rotate(360deg);
@@ -229,18 +278,3 @@
     transform: rotate(0deg);
   }
 }
-
-
-
-
-/* Add this new class to handle alignment for the chat box */
-.chatContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* Ensure messages start from the top */
-  align-items: flex-start;
-  height: 100%;
-  width: 100%;
-  overflow-y: auto; /* Allow scrolling if the content exceeds height */
-}
-

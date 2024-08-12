@@ -1,5 +1,4 @@
-'use client';
-
+'use client'
 import React, { useState } from 'react';
 import { Box, Stack, TextField, Button } from '@mui/material';
 import styles from './page.module.css';
@@ -49,11 +48,9 @@ export default function Home() {
     };
 
     return (
-        <Box
-            className={styles.main}
-        >
+        <Box className={styles.main}>
             <Stack
-                className={styles.chatContainer} /* Apply the new class */
+                className={styles.chatContainer}
                 direction="column"
                 width="600px"
                 maxWidth="90%"
@@ -61,7 +58,6 @@ export default function Home() {
                 maxHeight="calc(100vh - 250px)"
                 border="2px solid white"
                 borderRadius={2}
-                padding={2}
                 spacing={2}
             >
                 {messages.map((msg, index) => (
@@ -72,8 +68,7 @@ export default function Home() {
                         width="100%"
                     >
                         <Box
-                            bgcolor={msg.role === 'assistant' ? 'primary.main' : 'secondary.main'}
-                            color="white"
+                            className={msg.role === 'assistant' ? styles.assistantMessage : styles.userMessage}
                             borderRadius={2}
                             padding={2}
                             maxWidth="80%"
@@ -93,6 +88,7 @@ export default function Home() {
                 className={styles.center}
             >
                 <TextField
+                    className={styles.textField}
                     label="Type your message here"
                     fullWidth
                     value={message}
@@ -101,11 +97,10 @@ export default function Home() {
                     disabled={loading}
                 />
                 <Button
+                    className={styles.sendButton}
                     variant="contained"
-                    color="primary"
                     onClick={sendMessage}
                     disabled={loading}
-                    sx={{ whiteSpace: 'nowrap' }}
                 >
                     {loading ? "Sending..." : "Send"}
                 </Button>
