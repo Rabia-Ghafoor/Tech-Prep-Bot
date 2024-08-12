@@ -1,31 +1,25 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Box, Stack, TextField, Button, Typography } from '@mui/material';
+import { Box, Stack, TextField, Button } from '@mui/material';
+import styles from './page.module.css';
 
 export default function Home() {
-    // State to hold the list of messages
     const [messages, setMessages] = useState([
-        { role: 'assistant', content: 'Hi, I am the Customer Support Chat Bot. How can I assist you today?' }
+        { role: 'assistant', content: 'Hi, I am the Techprep Bot. How can I assist you today?' }
     ]);
-
-    // State to hold the current message being typed
     const [message, setMessage] = useState('');
-
-    // State to manage loading state when sending a message
     const [loading, setLoading] = useState(false);
 
-    // Function to handle sending a message
     const sendMessage = async () => {
-        if (!message.trim()) return; // Don't send empty messages
+        if (!message.trim()) return;
 
         const newMessage = { role: 'user', content: message };
-        setMessages([...messages, newMessage]); // Add the new message to the messages array
-        setMessage(''); // Clear the input field
-        setLoading(true); // Set loading state
+        setMessages([...messages, newMessage]);
+        setMessage('');
+        setLoading(true);
 
         try {
-            // Send the message to the API
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
@@ -44,45 +38,38 @@ export default function Home() {
             const data = await response.json();
             const assistantReply = data.choices?.[0]?.message?.content || "Sorry, something went wrong.";
 
-            setMessages([...messages, newMessage, { role: 'assistant', content: assistantReply }]); // Update messages with assistant's reply
+            setMessages([...messages, newMessage, { role: 'assistant', content: assistantReply }]);
 
         } catch (error) {
             console.error('Failed to send message:', error);
             setMessages([...messages, newMessage, { role: 'assistant', content: "Sorry, something went wrong. Please try again later." }]);
         } finally {
-            setLoading(false); // Reset loading state
+            setLoading(false);
         }
     };
 
     return (
         <Box
-            width="100vw"
-            height="100vh"
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            padding={2}
+            className={styles.main}
         >
-            <Typography variant="h4" gutterBottom>
-                Customer Support Chat
-            </Typography>
-
             <Stack
+                className={styles.chatContainer} /* Apply the new class */
                 direction="column"
                 width="600px"
+                maxWidth="90%"
                 height="70vh"
-                border="1px solid black"
+                maxHeight="calc(100vh - 250px)"
+                border="2px solid white"
                 borderRadius={2}
                 padding={2}
                 spacing={2}
-                overflow="auto"
             >
                 {messages.map((msg, index) => (
                     <Box
                         key={index}
                         display="flex"
                         justifyContent={msg.role === 'assistant' ? 'flex-start' : 'flex-end'}
+                        width="100%"
                     >
                         <Box
                             bgcolor={msg.role === 'assistant' ? 'primary.main' : 'secondary.main'}
@@ -97,9 +84,16 @@ export default function Home() {
                 ))}
             </Stack>
 
-            <Stack direction="row" spacing={2} marginTop={2}>
+            <Stack
+                direction="row"
+                spacing={1}
+                marginTop={2}
+                width="600px"
+                maxWidth="90%"
+                className={styles.center}
+            >
                 <TextField
-                    label="Type your message"
+                    label="Type your message here"
                     fullWidth
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -111,6 +105,7 @@ export default function Home() {
                     color="primary"
                     onClick={sendMessage}
                     disabled={loading}
+                    sx={{ whiteSpace: 'nowrap' }}
                 >
                     {loading ? "Sending..." : "Send"}
                 </Button>

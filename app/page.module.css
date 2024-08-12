@@ -1,7 +1,8 @@
+
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start; /* Changed from space-between to flex-start */
   align-items: center;
   padding: 6rem;
   min-height: 100vh;
@@ -228,3 +229,18 @@
     transform: rotate(0deg);
   }
 }
+
+
+
+
+/* Add this new class to handle alignment for the chat box */
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Ensure messages start from the top */
+  align-items: flex-start;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto; /* Allow scrolling if the content exceeds height */
+}
+
