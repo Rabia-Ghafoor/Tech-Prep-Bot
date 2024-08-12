@@ -1,125 +1,120 @@
-'use client'
+'use client';
 
-import { Box, Stack, TextField, Button } from "@mui/material";
-import { useState } from "react";
-import Image from 'next/image';
-
+import React, { useState } from 'react';
+import { Box, Stack, TextField, Button, Typography } from '@mui/material';
 
 export default function Home() {
-
-  const [messages, setMessages] = useState([{
-    role: 'Assistant',
-    content: `Hi, I am the Customer Support Chat Bot. How can I assist you today?`,
-  }]);
-
-  const [message, setMessage] = useState('');
-
-  // helper function
-  const sendMessage = async () => {
-    setMessage('');
-    setMessages((messages) => [
-      ...messages,
-      { role: "user", content: message },
-      { role: "assistant", content: "" },
+    // State to hold the list of messages
+    const [messages, setMessages] = useState([
+        { role: 'assistant', content: 'Hi, I am the Customer Support Chat Bot. How can I assist you today?' }
     ]);
 
-    const response = await fetch('api/chat', {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify([...messages, { role: "user", content: message }]),
-    });
+    // State to hold the current message being typed
+    const [message, setMessage] = useState('');
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
+    // State to manage loading state when sending a message
+    const [loading, setLoading] = useState(false);
 
-    let result = '';
-    reader.read().then(function processText({ done, value }) {
-      if (done) {
-        return result;
-      }
+    // Function to handle sending a message
+    const sendMessage = async () => {
+        if (!message.trim()) return; // Don't send empty messages
 
-      const text = decoder.decode(value || new Int8Array(), { stream: true });
-      setMessages((messages) => {
-        let lastMessage = messages[messages.length - 1];
-        let otherMessages = messages.slice(0, messages.length - 1);
+        const newMessage = { role: 'user', content: message };
+        setMessages([...messages, newMessage]); // Add the new message to the messages array
+        setMessage(''); // Clear the input field
+        setLoading(true); // Set loading state
 
-        return ([
-          ...otherMessages,
-          {
-            ...lastMessage,
-            content: lastMessage.content + text,
-          },
-        ]);
-      });
+        try {
+            // Send the message to the API
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify([...messages, newMessage]),
+            });
 
-      return reader.read().then(processText);
-    });
-  };
+            if (!response.ok) {
+                const errorBody = await response.text();
+                console.error('Response error:', response);
+                console.error('Response body:', errorBody);
+                throw new Error(`Error: ${response.status}`);
+            }
 
-  return (
-    <Box 
-      width="100vw"
-      height="70vh"
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
-      alignItems="center"
-    >
-      {/* Stack for messages */}
-      <Stack
-        direction="column"
-        width="600px"
-        height="700px"
-        border="1px solid black"
-        p={2}
-        spacing={2}
-      >
-        <Stack
-          direction="column"
-          width="600px"
-          height="700px"
-          overflow="auto"
-          border="1px solid black"
-          maxHeight="100%"
+            const data = await response.json();
+            const assistantReply = data.choices?.[0]?.message?.content || "Sorry, something went wrong.";
+
+            setMessages([...messages, newMessage, { role: 'assistant', content: assistantReply }]); // Update messages with assistant's reply
+
+        } catch (error) {
+            console.error('Failed to send message:', error);
+            setMessages([...messages, newMessage, { role: 'assistant', content: "Sorry, something went wrong. Please try again later." }]);
+        } finally {
+            setLoading(false); // Reset loading state
+        }
+    };
+
+    return (
+        <Box
+            width="100vw"
+            height="100vh"
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            padding={2}
         >
-          {messages.map((message, index) => (
-            <Box 
-              key={index}
-              display="flex"
-              justifyContent={
-                message.role === 'Assistant' ? 'flex-start' : 'flex-end'
-              }
-            >
-              <Box
-                bgcolor={
-                  message.role === 'Assistant'
-                    ? 'primary.main'
-                    : 'secondary.main'
-                }
-                color="white" // color of the text
-                borderRadius={2}
-                p={5}
-              >
-                {message.content}
-              </Box>
-            </Box>
-          ))}
-        </Stack>
+            <Typography variant="h4" gutterBottom>
+                Customer Support Chat
+            </Typography>
 
-        <Stack direction="row" spacing={2}>
-          <TextField 
-            label="message" 
-            fullWidth
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-          <Button variant="contained" onClick={sendMessage}> 
-            Send
-          </Button>
-        </Stack>
-      </Stack>
-    </Box>
-  );
+            <Stack
+                direction="column"
+                width="600px"
+                height="70vh"
+                border="1px solid black"
+                borderRadius={2}
+                padding={2}
+                spacing={2}
+                overflow="auto"
+            >
+                {messages.map((msg, index) => (
+                    <Box
+                        key={index}
+                        display="flex"
+                        justifyContent={msg.role === 'assistant' ? 'flex-start' : 'flex-end'}
+                    >
+                        <Box
+                            bgcolor={msg.role === 'assistant' ? 'primary.main' : 'secondary.main'}
+                            color="white"
+                            borderRadius={2}
+                            padding={2}
+                            maxWidth="80%"
+                        >
+                            {msg.content}
+                        </Box>
+                    </Box>
+                ))}
+            </Stack>
+
+            <Stack direction="row" spacing={2} marginTop={2}>
+                <TextField
+                    label="Type your message"
+                    fullWidth
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && !loading && sendMessage()}
+                    disabled={loading}
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={sendMessage}
+                    disabled={loading}
+                >
+                    {loading ? "Sending..." : "Send"}
+                </Button>
+            </Stack>
+        </Box>
+    );
 }
