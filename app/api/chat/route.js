@@ -34,7 +34,12 @@ export async function POST(req) {
 
     } catch (error) {
         // Log and return the error if something goes wrong
-        console.error('Error processing request:', error.message);
+        console.error('Error processing request:', {
+            message: error.message,
+            stack: error.stack,  // This will help trace the error better
+            inputData: data,  // Log the input data for context
+        });
+
         return NextResponse.json({
             error: 'Internal Server Error',
             message: error.message,
